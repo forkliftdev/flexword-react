@@ -3,9 +3,31 @@
 @tailwind utilities;
 
 :root {
-  background-color: #121212; /* backgroundDark from Dart */
-  color: #E0E0E0; /* textWhite from Dart */
-  font-family: 'Roboto Mono', 'Courier New', monospace; /* Matches Dart fontFamily */
+  /* Brand Colors */
+  --tech-blue: #007acc;
+  --caution-amber: #ffc72c;
+
+  /* Functional Colors (Dark Mode) */
+  --wrong-dark: #3a3a3a;
+  --background-dark: #121212;
+  --surface-grey: #1e1e1e;
+  --text-white: #e0e0e0;
+
+  /* Risk Level Colors */
+  --risk-safe: #4caf50; /* Green */
+  --risk-standard: #2196f3; /* Blue */
+  --risk-risky: #ffc107; /* Amber */
+  --risk-hard: #ff9800; /* Orange */
+  --risk-extreme: #f44336; /* Red */
+
+  /* Game Tile Colors */
+  --correct: #007acc; /* techBlue circle */
+  --present: #ffc72c; /* cautionAmber triangle */
+  --absent: #3a3a3a; /* wrongDark square */
+
+  background-color: var(--background-dark);
+  color: var(--text-white);
+  font-family: 'Roboto Mono', 'Courier New', monospace;
 }
 
 body {
@@ -14,4 +36,5 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--background-dark);
 }
