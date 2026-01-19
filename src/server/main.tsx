@@ -30,8 +30,16 @@ Devvit.addMenuItem({
 Devvit.addCustomPostType({
   name: 'FlexWord',
   height: 'tall',
-  render: () => {
-    return <blocks />;
+  render: (context) => {
+    return (
+      <blocks height="tall">
+        <webview
+          id="flexword-webview"
+          url="index.html"
+          onMessage={(msg) => console.log(msg)}
+        />
+      </blocks>
+    );
   },
 });
 
