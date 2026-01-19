@@ -1,12 +1,12 @@
-
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "jsxImportSource": "@devvit/public-api",
-    "noEmit": true
-  },
+  "module": "ESNext",
+  "target": "ESNext",
+  "moduleResolution": "bundler",
+  "jsx": "react",
+  "jsxFactory": "Devvit.createElement",
+  "noEmit": true
+},
+
   "include": ["**/*.ts", "**/*.tsx"]
 }

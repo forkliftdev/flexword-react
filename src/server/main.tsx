@@ -30,18 +30,10 @@ Devvit.addMenuItem({
 Devvit.addCustomPostType({
   name: 'FlexWord',
   height: 'tall',
-  render: (context) => {
-    return (
-      <vstack height="100%" width="100%">
-        <webview
-          id="flexword_game"
-          url="index.html" 
-          width="100%"
-          height="100%"
-        />
-      </vstack>
-    );
+  render: () => {
+    return <blocks />;
   },
 });
+
 
 export default Devvit;
