@@ -12,7 +12,7 @@ export interface ContractTier {
   guesses: number;
   multiplier: number;
   color: string;
-  icon: 'shield' | 'briefcase' | 'warning' | 'fire' | 'skull';
+  icon: 'shield' | 'briefcase' | 'warning' | 'fire' | 'octagon';
 }
 
 export type RowData = {
@@ -48,6 +48,6 @@ export const CONTRACTS: ContractTier[] = [
     guesses: 2,
     multiplier: 10.0,
     color: 'bg-[#F44336]',
-    icon: 'skull',
+    icon: 'octagon',
   },
 ];
