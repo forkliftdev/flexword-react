@@ -1,15 +1,20 @@
 {
+  "name": "flexword-react",
   "post": {
     "dir": "dist/client",
     "entrypoints": {
       "default": {
         "inline": true,
-        "entry": "index.html" 
+        "entry": "index.html"
       }
     }
   },
   "server": {
     "dir": "dist/server",
-    "entry": "main.js" 
+    "entry": "main.js"
+  },
+
+  "dev": {
+    "subreddit": "flexword_dev"
   }
 }

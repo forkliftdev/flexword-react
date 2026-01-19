@@ -8,7 +8,6 @@ Devvit.configure({
 Devvit.addMenuItem({
   label: 'Create FlexWord Post',
   location: 'subreddit',
-  forUserType: 'moderator',
   onPress: async (_event, context) => {
     const subreddit = await context.reddit.getCurrentSubreddit();
     await context.reddit.submitPost({
@@ -42,6 +41,5 @@ Devvit.addCustomPostType({
     );
   },
 });
-
 
 export default Devvit;

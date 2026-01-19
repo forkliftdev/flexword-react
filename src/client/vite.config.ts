@@ -6,12 +6,14 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react(), tailwind()],
   logLevel: 'warn',
+  base: './',
   build: {
     outDir: '../../dist/client',
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
       input: {
+        index: 'index.html',
         splash: 'splash.html',
         game: 'game.html',
       },

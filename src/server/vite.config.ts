@@ -7,7 +7,7 @@ export default defineConfig({
   },
   logLevel: 'warn',
   build: {
-    ssr: 'index.ts',
+    ssr: 'main.tsx',
     outDir: '../../dist/server',
     emptyOutDir: true,
     target: 'node22',
@@ -17,7 +17,7 @@ export default defineConfig({
 
       output: {
         format: 'cjs',
-        entryFileNames: 'index.cjs',
+        entryFileNames: 'main.js',
         inlineDynamicImports: true,
       },
     },

@@ -18,7 +18,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
     errorMessage, 
     handleInput, 
     startGame,
-    targetWord
+    targetWord,
     keyStatuses
   } = useFlexword();
 
@@ -94,7 +94,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
       <div className="mt-auto w-full max-w-md">
         <Keyboard 
           onKeyPress={(key) => handleInput(key)} 
-          keyStatuses={useFlexword().keyStatuses} // Wait, we need to extract this from the hook first!
+          keyStatuses={keyStatuses}
         />
       </div>
       

@@ -7,7 +7,7 @@
   "scripts": {
     "build:client": "cd src/client && vite build",
     "build:server": "cd src/server && vite build",
-    "build": "devvit build",
+    "build": "npm run build:client && npm run build:server",
     "check": "npm run type-check && npm run lint:fix && npm run prettier",
     "deploy": "npm run build && devvit upload",
     "dev": "devvit play",
