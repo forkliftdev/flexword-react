@@ -1,1 +1,9 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: Default dark mode background to prevent white flashes */
+body {
+  background-color: #121212;
+  color: white;
+}
