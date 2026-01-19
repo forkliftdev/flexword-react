@@ -7,10 +7,10 @@
   "scripts": {
     "build:client": "cd src/client && vite build",
     "build:server": "cd src/server && vite build",
-    "build": "npm run build:client && npm run build:server",
+    "build": "devvit build",
     "check": "npm run type-check && npm run lint:fix && npm run prettier",
     "deploy": "npm run build && devvit upload",
-    "dev": "concurrently -k -p \"[{name}]\" -n \"CLIENT,SERVER,DEVVIT\" -c \"blue,green,magenta\" \"npm run dev:client\" \"npm run dev:server\" \"npm run dev:devvit\"",
+    "dev": "devvit play",
     "dev:client": "cd src/client && vite build --watch",
     "dev:devvit": "devvit playtest",
     "dev:server": "cd src/server && vite build --watch",
@@ -23,9 +23,10 @@
     "type-check": "tsc --build"
   },
   "dependencies": {
+    "@devvit/public-api": "^0.12.8",
     "@devvit/web": "0.12.8",
     "clsx": "2.1.1",
-    "devvit": "0.12.8",
+    "devvit": "^0.12.8",
     "express": "5.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",

@@ -1,5 +1,10 @@
 {
-  // Only build references.
-  "files": [],
-  "references": [{ "path": "./src/client" }, { "path": "./src/shared" }, { "path": "./src/server" }]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDirs": ["."],
+    "outDir": "../../dist/server",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@devvit/public-api" 
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
 }

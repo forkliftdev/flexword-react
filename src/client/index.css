@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Optional: Default dark mode background to prevent white flashes */
+:root {
+  background-color: #121212; /* backgroundDark from Dart */
+  color: #E0E0E0; /* textWhite from Dart */
+  font-family: 'Roboto Mono', 'Courier New', monospace; /* Matches Dart fontFamily */
+}
+
 body {
-  background-color: #121212;
-  color: white;
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
 }
