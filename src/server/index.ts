@@ -1,7 +1,16 @@
 import express from 'express';
-import { InitResponse, IncrementResponse, DecrementResponse } from '../shared/types/api';
+import {
+  InitResponse,
+  IncrementResponse,
+  DecrementResponse,
+  UserDataResponse,
+  SaveGameRequest,
+  SaveGameResponse,
+  LeaderboardResponse,
+} from '../shared/types/api';
 import { redis, reddit, createServer, context, getServerPort } from '@devvit/web/server';
 import { createPost } from './core/post';
+import * as RedisService from './core/redis-service';
 
 const app = express();
 
@@ -88,6 +97,108 @@ router.post<{ postId: string }, DecrementResponse | { status: string; message: s
       postId,
       type: 'decrement',
     });
+  }
+);
+
+// Get user data (bank balance and solved words)
+router.get<{}, UserDataResponse | { status: string; message: string }>(
+  '/api/user-data',
+  async (_req, res): Promise<void> => {
+    try {
+      const username = await reddit.getCurrentUsername();
+
+      if (!username) {
+        res.status(400).json({
+          status: 'error',
+          message: 'Unable to get username',
+        });
+        return;
+      }
+
+      const [bank, solvedWords] = await Promise.all([
+        RedisService.getUserBank(username),
+        RedisService.getSolvedWords(username),
+      ]);
+
+      res.json({
+        type: 'user-data',
+        username,
+        bank,
+        solvedWords,
+      });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch user data',
+      });
+    }
+  }
+);
+
+// Save game result (update bank, track solved word, update leaderboard)
+router.post<{}, SaveGameResponse | { status: string; message: string }, SaveGameRequest>(
+  '/api/save-game',
+  async (req, res): Promise<void> => {
+    try {
+      const username = await reddit.getCurrentUsername();
+
+      if (!username) {
+        res.status(400).json({
+          status: 'error',
+          message: 'Unable to get username',
+        });
+        return;
+      }
+
+      const { word, winnings } = req.body;
+
+      // Update bank balance
+      const newBank = await RedisService.updateUserBank(username, winnings);
+
+      // Track solved word
+      await RedisService.addSolvedWord(username, word);
+
+      // Update leaderboard
+      await RedisService.updateLeaderboard(username, newBank);
+
+      // Get total solved count
+      const solvedWords = await RedisService.getSolvedWords(username);
+
+      res.json({
+        type: 'save-game',
+        newBank,
+        totalSolved: solvedWords.length,
+      });
+    } catch (error) {
+      console.error('Error saving game:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to save game',
+      });
+    }
+  }
+);
+
+// Get leaderboard
+router.get<{}, LeaderboardResponse | { status: string; message: string }>(
+  '/api/leaderboard',
+  async (req, res): Promise<void> => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const entries = await RedisService.getLeaderboard(limit);
+
+      res.json({
+        type: 'leaderboard',
+        entries,
+      });
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch leaderboard',
+      });
+    }
   }
 );
 

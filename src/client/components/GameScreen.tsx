@@ -3,6 +3,10 @@ import { useFlexword } from '../hooks/useFlexword';
 import { TileFrame } from './TileFrame';
 import { ContractTier, TileStatus } from '../types';
 import { Keyboard } from './Keyboard';
+import { BankDisplay } from './BankDisplay';
+import { Leaderboard } from './Leaderboard';
+import { CelebrationPopup } from './CelebrationPopup';
+import { WarningPopup } from './WarningPopup';
 
 interface GameScreenProps {
   contract: ContractTier;
@@ -11,6 +15,7 @@ interface GameScreenProps {
 
 export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   
   const { 
     phase, 
@@ -21,7 +26,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
     handleInput, 
     startGame,
     targetWord,
-    keyStatuses
+    keyStatuses,
+    bankScore,
+    isTransferring,
+    lastWinnings,
+    showWarning,
+    showCelebration,
+    closeWarning,
+    closeCelebration,
   } = useFlexword();
 
   useEffect(() => {
@@ -64,16 +76,36 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
       
       {/* APP BAR */}
       <div className="flex justify-between items-center px-4 py-4 border-b border-white/5">
-        <button onClick={onExit} className="text-white/70 hover:text-white">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <div className="flex items-center gap-3">
+          <button onClick={onExit} className="text-white/70 hover:text-white">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          {/* DEBUG: Show target word */}
+          <div className="text-xs text-red-400 font-mono bg-red-900/20 px-2 py-1 rounded border border-red-500/30">
+            🎯 {targetWord}
+          </div>
+        </div>
+        <h1 className="text-xl font-black tracking-wide text-[#007ACC]">FlexWord</h1>
+        <button 
+          onClick={() => setShowLeaderboard(true)}
+          className="text-white/70 hover:text-white transition"
+          title="Leaderboard"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
         </button>
-        <h1 className="text-xl font-black tracking-wide text-[#007ACC]">FlexWord</h1>
-        <div className="text-right">
-          <div className="text-[10px] text-gray-500 font-bold">BANK</div>
-          <div className="text-[#FFC72C] font-bold text-sm">0</div>
-        </div>
+      </div>
+
+      {/* BANK DISPLAY - Centered below logo */}
+      <div className="border-b border-white/5">
+        <BankDisplay 
+          balance={bankScore}
+          isAnimating={isTransferring}
+          transferAmount={lastWinnings}
+        />
       </div>
 
       {/* HUD: Contract Ticket + POT */}
@@ -174,19 +206,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
         </div>
       )}
       
-      {/* GAME OVER MESSAGES */}
-      {phase === 'WON' && (
-        <div className="mx-4 mb-4 p-3 bg-[#1E1E1E] rounded border border-[#4CAF50]/30 text-center">
-          <h2 className="text-lg font-bold text-[#007ACC] mb-2 tracking-wider">CONTRACT COMPLETE</h2>
-          <button 
-            onClick={onExit} 
-            className="bg-[#007ACC] text-white px-6 py-2.5 rounded font-bold w-full hover:brightness-110 transition text-sm"
-          >
-            PICK NEW CONTRACT
-          </button>
-        </div>
-      )}
-      
+      {/* GAME OVER MESSAGES - Only show LOST */}
       {phase === 'LOST' && (
         <div className="mx-4 mb-4 p-3 bg-[#1E1E1E] rounded border border-[#F44336]/30 text-center">
           <h2 className="text-lg font-bold text-[#F44336] mb-1.5 tracking-wider">CONTRACT BREACHED</h2>
@@ -238,6 +258,32 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
           </div>
         </div>
       )}
+
+      {/* Leaderboard Modal */}
+      <Leaderboard 
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+      />
+
+      {/* Warning Popup - Last Contract Guess */}
+      <WarningPopup 
+        isOpen={showWarning}
+        guessesRemaining={contract ? contract.guesses - guesses.length : 0}
+        currentPot={potValue}
+        onContinue={closeWarning}
+      />
+
+      {/* Celebration Popup - Win */}
+      <CelebrationPopup 
+        isOpen={showCelebration}
+        winnings={lastWinnings}
+        guessCount={guesses.length}
+        contractGuesses={contract?.guesses || 0}
+        currentBank={bankScore - lastWinnings}
+        newBank={bankScore}
+        onClose={closeCelebration}
+        onExit={onExit}
+      />
     </div>
   );
 };
@@ -265,7 +311,7 @@ const StaticRow = ({ word, target }: { word: string, target: string }) => {
   return (
     <div className="flex justify-center gap-1.5">
       {word.split('').map((char, i) => (
-        <TileFrame key={i} char={char} status={statuses[i]} size={35} />
+        <TileFrame key={i} char={char} status={statuses[i] || 'initial'} size={35} />
       ))}
     </div>
   );
