@@ -11,11 +11,17 @@ export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect }) => {
   const bankScore = 0;
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md mx-auto p-4 bg-[#121212] text-white min-h-screen">
+    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto px-4 py-6 bg-[#121212] text-white min-h-screen">
       
       {/* Header with Logo and Bank */}
-      <div className="w-full flex justify-between items-start mb-4">
-        <h1 className="text-2xl font-black tracking-wider text-[#E0E0E0]">FlexWord</h1>
+      <div className="w-full flex justify-between items-start mb-6">
+        <div className="flex items-center gap-2">
+          {/* Logo Icon */}
+          <svg className="w-8 h-8 text-[#007ACC]" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+          </svg>
+          <h1 className="text-2xl font-black tracking-wider text-[#E0E0E0]">FlexWord</h1>
+        </div>
         <div className="text-right">
           <div className="text-[10px] text-gray-500 font-bold">BANK</div>
           <div className="text-[#FFC72C] font-bold text-lg">{bankScore.toLocaleString()}</div>
@@ -41,7 +47,7 @@ export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect }) => {
       </div>
 
       {/* Title Section */}
-      <div className="text-center mb-4">
+      <div className="text-center mb-5">
         <h2 className="text-lg font-bold uppercase tracking-wide">How Many Guesses?</h2>
         <p className="text-xs text-gray-500 tracking-wider">BID TO OPEN CONTRACT</p>
         <p className="text-xs text-[#FFC72C] mt-1">10,000 pts to solve the puzzle</p>
@@ -83,10 +89,10 @@ export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect }) => {
       </div>
 
       {/* Footer Instructions - Tighter Line Spacing */}
-      <div className="mt-auto text-center text-gray-500 text-xs max-w-xs leading-tight">
-        <p className="font-bold text-gray-400 mb-0.5">Unlimited guesses...</p>
-        <p className="leading-tight">miss your turn lose half your bid.</p>
-        <p className="leading-tight">Score halved every turn after bid.</p>
+      <div className="mt-auto text-center text-gray-500 text-xs max-w-xs">
+        <p className="font-bold text-gray-400 mb-0">Unlimited guesses...</p>
+        <p className="leading-[1.2]">miss your turn lose half your bid.</p>
+        <p className="leading-[1.2]">Score halved every turn after bid.</p>
       </div>
     </div>
   );

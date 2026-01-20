@@ -14,7 +14,7 @@ export const useFlexword = () => {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [contract, setContract] = useState<ContractTier | null>(null);
-  
+
   // Scoring
   const [bankScore, setBankScore] = useState(0); // Load this from Reddit/Redis later
   const [potValue, setPotValue] = useState(10000);
@@ -28,8 +28,8 @@ export const useFlexword = () => {
   // 1. Start Game
   const startGame = useCallback((selectedContract: ContractTier) => {
     const newWord = getRandomWord();
-    console.log("Target Word:", newWord); // For debugging
-    
+    console.log('Target Word:', newWord); // For debugging
+
     setContract(selectedContract);
     setTargetWord(newWord);
     setGuesses([]);
@@ -41,29 +41,73 @@ export const useFlexword = () => {
   }, []);
 
   // 2. Handle Input
-  const handleInput = useCallback((key: string) => {
-    if (phase !== 'PLAYING') return;
+  const handleInput = useCallback(
+    (key: string) => {
+      if (phase !== 'PLAYING') return;
 
-    // Clear error on any typing
-    setErrorMessage('');
+      // Clear error on any typing
+      setErrorMessage('');
 
-    const upperKey = key.toUpperCase();
+      const upperKey = key.toUpperCase();
 
-    if (upperKey === 'ENTER') {
-      submitGuess();
-    } else if (upperKey === 'BACKSPACE' || upperKey === 'DEL') {
-      setCurrentGuess(prev => prev.slice(0, -1));
-    } else if (upperKey === ' ' || upperKey === '_') {
-      // Logic from game_controller.dart: Space adds underscore
-      if (currentGuess.length < WORD_LENGTH) {
-        setCurrentGuess(prev => prev + '_');
+      if (upperKey === 'ENTER') {
+        // Submit logic inline to avoid dependency issues
+        if (!contract) return;
+
+        // Validation Rules
+        if (currentGuess.includes('_')) {
+          setErrorMessage('INCOMPLETE WORD!');
+          return;
+        }
+        if (currentGuess.length !== WORD_LENGTH) {
+          setErrorMessage('TOO SHORT!');
+          return;
+        }
+        if (!isValidWord(currentGuess)) {
+          setErrorMessage('NOT ON WORD LIST');
+          return;
+        }
+
+        // Process the Move
+        const newGuesses = [...guesses, currentGuess];
+        setGuesses(newGuesses);
+
+        // Update Keyboard Colors
+        const newKeys = { ...keyStatuses };
+        const scores = getScoreForGuess(currentGuess, targetWord);
+
+        currentGuess.split('').forEach((char, i) => {
+          const status = scores[i];
+          // Logic: Don't downgrade a Green to Yellow
+          if (newKeys[char] === 'correct') return;
+          if (newKeys[char] === 'present' && status === 'absent') return;
+          newKeys[char] = status;
+        });
+        setKeyStatuses(newKeys);
+
+        // Check Win/Loss/Overtime
+        if (currentGuess === targetWord) {
+          handleWin(newGuesses.length);
+        } else {
+          handleMiss(newGuesses.length);
+        }
+
+        setCurrentGuess('');
+      } else if (upperKey === 'BACKSPACE' || upperKey === 'DEL') {
+        setCurrentGuess((prev) => prev.slice(0, -1));
+      } else if (upperKey === ' ' || upperKey === '_') {
+        // Logic from game_controller.dart: Space adds underscore
+        if (currentGuess.length < WORD_LENGTH) {
+          setCurrentGuess((prev) => prev + '_');
+        }
+      } else if (/^[A-Z]$/.test(upperKey)) {
+        if (currentGuess.length < WORD_LENGTH) {
+          setCurrentGuess((prev) => prev + upperKey);
+        }
       }
-    } else if (/^[A-Z]$/.test(upperKey)) {
-      if (currentGuess.length < WORD_LENGTH) {
-        setCurrentGuess(prev => prev + upperKey);
-      }
-    }
-  }, [phase, currentGuess, targetWord]); // Dependencies
+    },
+    [phase, currentGuess, targetWord, contract, guesses, keyStatuses]
+  ); // All dependencies
 
   // 3. Submit Logic (The Meat)
   const submitGuess = () => {
@@ -71,30 +115,30 @@ export const useFlexword = () => {
 
     // Validation Rules
     if (currentGuess.includes('_')) {
-      setErrorMessage("INCOMPLETE WORD!");
+      setErrorMessage('INCOMPLETE WORD!');
       return;
     }
     if (currentGuess.length !== WORD_LENGTH) {
-      setErrorMessage("TOO SHORT!");
+      setErrorMessage('TOO SHORT!');
       return;
     }
     if (!isValidWord(currentGuess)) {
-      setErrorMessage("NOT ON WORD LIST");
+      setErrorMessage('NOT ON WORD LIST');
       return;
     }
 
     // Process the Move
     const newGuesses = [...guesses, currentGuess];
     setGuesses(newGuesses);
-    
+
     // Update Keyboard Colors
     const newKeys = { ...keyStatuses };
     const scores = getScoreForGuess(currentGuess, targetWord);
-    
+
     currentGuess.split('').forEach((char, i) => {
       const status = scores[i];
       // Logic: Don't downgrade a Green to Yellow
-      if (newKeys[char] === 'correct') return; 
+      if (newKeys[char] === 'correct') return;
       if (newKeys[char] === 'present' && status === 'absent') return;
       newKeys[char] = status;
     });
@@ -106,23 +150,23 @@ export const useFlexword = () => {
     } else {
       handleMiss(newGuesses.length);
     }
-    
+
     setCurrentGuess('');
   };
 
   const handleWin = (guessCount: number) => {
     if (!contract) return;
-    
+
     let winnings = 0;
     // If within contract limits, apply multiplier
     if (guessCount <= contract.guesses) {
       winnings = Math.floor(potValue * contract.multiplier);
     } else {
       // Overtime win: You get the decayed pot, no multiplier
-      winnings = potValue; 
+      winnings = potValue;
     }
 
-    setBankScore(prev => prev + winnings);
+    setBankScore((prev) => prev + winnings);
     setPotValue(winnings); // Show final win amount
     setPhase('WON');
   };
@@ -133,7 +177,7 @@ export const useFlexword = () => {
     // Overtime Logic from game_controller.dart
     if (guessCount >= contract.guesses) {
       // "Score halved every turn after bid"
-      setPotValue(prev => Math.floor(prev / 2));
+      setPotValue((prev) => Math.floor(prev / 2));
     }
   };
 
@@ -148,7 +192,7 @@ export const useFlexword = () => {
       if (char === targetArr[i]) {
         result[i] = 'correct';
         targetArr[i] = '#'; // Mark as used
-        guessArr[i] = '*';  // Mark as processed
+        guessArr[i] = '*'; // Mark as processed
       }
     });
 
@@ -176,6 +220,6 @@ export const useFlexword = () => {
     keyStatuses,
     startGame,
     handleInput,
-    contract
+    contract,
   };
 };

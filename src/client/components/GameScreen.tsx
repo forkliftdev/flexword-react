@@ -63,7 +63,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
     <div className="flex flex-col h-screen bg-[#121212] text-white max-w-md mx-auto">
       
       {/* APP BAR */}
-      <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
+      <div className="flex justify-between items-center px-4 py-4 border-b border-white/5">
         <button onClick={onExit} className="text-white/70 hover:text-white">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -77,7 +77,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
       </div>
 
       {/* HUD: Contract Ticket + POT */}
-      <div className="px-4 py-3 border-b border-white/5">
+      <div className="px-4 py-4 border-b border-white/5">
         <div className="flex justify-between items-center mb-2">
           {/* Contract Ticket */}
           <div 
@@ -117,10 +117,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
         </div>
       </div>
 
-      {/* GUESSED WORDS - Directly above guess field, stacked like chat */}
-      <div className="flex-1 overflow-y-auto px-4 py-2 flex flex-col justify-end">
+      {/* GUESSED WORDS - Chat-style: newest at bottom, scroll up for history */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col justify-end">
         {guesses.map((word, i) => (
-          <div key={i} className="mb-1.5">
+          <div key={i} className="mb-2">
             <StaticRow word={word} target={targetWord} />
           </div>
         ))}
@@ -128,9 +128,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
 
       {/* CURRENT GUESS INPUT with Trash and Help buttons */}
       {phase === 'PLAYING' && (
-        <div className="px-4 pb-2">
+        <div className="px-4 pb-3">
           {errorMessage && (
-            <div className="text-center mb-1">
+            <div className="text-center mb-2">
               <span className="text-[#F44336] font-bold text-xs tracking-wide">
                 {errorMessage.toUpperCase()}
               </span>
@@ -148,14 +148,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
               </svg>
             </button>
 
-            {/* Guess Field - Smaller tiles with gaps */}
-            <div className="flex gap-1">
+            {/* Guess Field - Smaller tiles (35px) with gaps */}
+            <div className="flex gap-1.5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <TileFrame 
                   key={i} 
                   char={currentGuess[i] || ''} 
                   status="initial"
-                  size={40}
+                  size={35}
                 />
               ))}
             </div>
@@ -176,7 +176,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
       
       {/* GAME OVER MESSAGES */}
       {phase === 'WON' && (
-        <div className="mx-4 mb-3 p-3 bg-[#1E1E1E] rounded border border-[#4CAF50]/30 text-center">
+        <div className="mx-4 mb-4 p-3 bg-[#1E1E1E] rounded border border-[#4CAF50]/30 text-center">
           <h2 className="text-lg font-bold text-[#007ACC] mb-2 tracking-wider">CONTRACT COMPLETE</h2>
           <button 
             onClick={onExit} 
@@ -188,7 +188,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
       )}
       
       {phase === 'LOST' && (
-        <div className="mx-4 mb-3 p-3 bg-[#1E1E1E] rounded border border-[#F44336]/30 text-center">
+        <div className="mx-4 mb-4 p-3 bg-[#1E1E1E] rounded border border-[#F44336]/30 text-center">
           <h2 className="text-lg font-bold text-[#F44336] mb-1.5 tracking-wider">CONTRACT BREACHED</h2>
           <p className="mb-3 text-gray-400 text-sm">Target: <span className="text-white font-bold">{targetWord}</span></p>
           <button 
@@ -263,9 +263,9 @@ const StaticRow = ({ word, target }: { word: string, target: string }) => {
   const statuses = getStatuses();
 
   return (
-    <div className="flex justify-center gap-1">
+    <div className="flex justify-center gap-1.5">
       {word.split('').map((char, i) => (
-        <TileFrame key={i} char={char} status={statuses[i]} size={40} />
+        <TileFrame key={i} char={char} status={statuses[i]} size={35} />
       ))}
     </div>
   );
