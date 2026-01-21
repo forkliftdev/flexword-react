@@ -72,7 +72,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#121212] text-white max-w-md mx-auto">
+    <div className="flex flex-col h-screen w-full bg-[#121212] text-white">
       
       {/* APP BAR */}
       <div className="flex justify-between items-center px-4 py-4 border-b border-white/5">
@@ -226,6 +226,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
           <Keyboard 
             onKeyPress={(key) => handleInput(key)} 
             keyStatuses={keyStatuses}
+            contractColor={riskColor}
           />
         </div>
       )}

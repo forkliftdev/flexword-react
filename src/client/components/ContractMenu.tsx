@@ -11,7 +11,7 @@ export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect }) => {
   const bankScore = 0;
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto px-4 py-6 bg-[#121212] text-white min-h-screen">
+    <div className="flex flex-col items-center justify-center w-full h-full px-4 py-6 bg-[#121212] text-white">
       
       {/* Header with Logo and Bank */}
       <div className="w-full flex justify-between items-start mb-6">
