@@ -234,7 +234,7 @@ npm run dev:devvit -- flexword_dev
 ```bash
 npm run build
 ```
-
+then npm run dev:devvit -- flexword_dev
 ### Deploy to Reddit
 
 ```bash
@@ -334,3 +334,13 @@ npm run launch
 **Last Updated:** January 19, 2026  
 **Status:** Pre-launch (needs bug fixes and testing)  
 **Estimated Launch:** 1 week after bank persistence fix
+
+
+
+thoughts on buggy buttons If the top-left Back button (which is normal sized) works fine, but the Trash/Help buttons (before we super-sized them) looked invisible/thin, here is my technical speculation on the "bug":
+
+1. "Sub-pixel Blur" on Complex Icons The Back button (<) is a very simple shape with long, straight diagonal lines. Even at small sizes, screens render it cleanly. The Trash and Help icons are complex curves with more detail packed into the same 20px/24px square. When mobile screens try to squeeze those detailed curves into a small grid, they often use "anti-aliasing" (smoothing), which can blur the lines and make them look semi-transparent or "thin" compared to the crisp lines of a simple arrow.
+
+2. Color Contrast (Gray vs. White) The Back button uses a semi-transparent White (white/70), which is still "bright". The Trash/Help buttons were using gray-400. on an OLED/Dark mobile screen, gray-400 can look much darker and "muddier" than a translucent white, making the thin lines disappear into the dark background.
+
+3. The Fix By switching them to Pure White (maximum brightness) and Tier 3 Boldness (thicker lines), we forced the screen to render simpler, brighter pixels that overpower that blurring effect.
