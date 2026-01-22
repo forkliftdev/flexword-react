@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "flexword-react",
-  "version": "0.0.17",
+  "version": "0.0.21",
   "license": "BSD-3-Clause",
   "type": "module",
   "scripts": {

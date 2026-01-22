@@ -10,10 +10,11 @@ import { WarningPopup } from './WarningPopup';
 
 interface GameScreenProps {
   contract: ContractTier;
-  onExit: () => void;
+  onExit: (score?: number) => void;
+  initialBank?: number;
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
+export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initialBank }) => {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
@@ -34,7 +35,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
     showCelebration,
     closeWarning,
     closeCelebration,
-  } = useFlexword();
+  } = useFlexword(initialBank);
 
   useEffect(() => {
     startGame(contract);
@@ -77,7 +78,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
       {/* APP BAR */}
       <div className="flex justify-between items-center px-4 py-4 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <button onClick={onExit} className="text-white/70 hover:text-white">
+          <button onClick={() => onExit(bankScore)} className="text-white/70 hover:text-white">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -212,7 +213,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
           <h2 className="text-lg font-bold text-[#F44336] mb-1.5 tracking-wider">CONTRACT BREACHED</h2>
           <p className="mb-3 text-gray-400 text-sm">Target: <span className="text-white font-bold">{targetWord}</span></p>
           <button
-            onClick={onExit}
+            onClick={() => onExit(bankScore)}
             className="bg-gray-700 text-white px-6 py-2.5 rounded font-bold w-full hover:brightness-110 transition text-sm"
           >
             PICK NEW CONTRACT
@@ -283,7 +284,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
         currentBank={bankScore - lastWinnings}
         newBank={bankScore}
         onClose={closeCelebration}
-        onExit={onExit}
+        onExit={() => onExit(bankScore)} // Pass bank score on win exit
       />
     </div>
   );
