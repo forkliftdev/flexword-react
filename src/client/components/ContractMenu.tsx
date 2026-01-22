@@ -35,7 +35,7 @@ export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect, initialBan
 
       {/* 1. Header: Centered, Blue FlexWord */}
       <div className="w-full flex justify-center items-center mb-1 relative">
-        <h1 className="text-3xl font-black tracking-wider text-[#007ACC] uppercase">FlexWord v40</h1>
+        <h1 className="text-3xl font-black tracking-wider text-[#007ACC] uppercase">FlexWord 42</h1>
 
       </div>
 
