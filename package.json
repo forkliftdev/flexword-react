@@ -15,6 +15,7 @@
     "dev:devvit": "devvit playtest",
     "dev:server": "cd src/server && vite build --watch",
     "dev:vite": "cd src/client && vite --port 7474",
+    "dev:watch": "concurrently \"npm:dev:client\" \"npm:dev:server\" \"npm:dev:devvit -- flexword_dev\"",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",
     "login": "devvit login",

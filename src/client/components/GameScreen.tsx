@@ -8,7 +8,6 @@ import { Leaderboard } from './Leaderboard';
 import { CelebrationPopup } from './CelebrationPopup';
 import { WarningPopup } from './WarningPopup';
 import { Announcer } from './Announcer';
-import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface GameScreenProps {
   contract: ContractTier;
@@ -17,15 +16,8 @@ interface GameScreenProps {
 }
 
 export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initialBank }) => {
-  const [showHelpModal, setShowHelpModal] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [announcement, setAnnouncement] = useState('');
-
-  // Focus trap for help modal
-  const helpModalRef = useFocusTrap({
-    isActive: showHelpModal,
-    onEscape: () => setShowHelpModal(false),
-  });
 
   const {
     phase,
@@ -81,16 +73,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
 
   const riskColor = getRiskColor();
 
-  const handleTrash = () => {
-    // Clear current guess
-    while (currentGuess.length > 0) {
-      handleInput('BACKSPACE');
-    }
-  };
-
-  const handleGiveUp = () => {
-    setShowHelpModal(true);
-  };
 
   return (
     <div className="flex flex-col h-screen w-full bg-[#121212] text-white">
@@ -190,17 +172,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
             </div>
           )}
           <div className="flex items-center justify-center gap-2">
-            {/* Trash Button */}
-            <button
-              onClick={handleTrash}
-              className="p-2 bg-[#1E1E1E] rounded border border-white/10 hover:brightness-110 transition"
-              title="Clear guess"
-            >
-              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-
             {/* Guess Field - Smaller tiles (35px) with gaps */}
             <div className="flex gap-1.5" role="group" aria-label="Current guess">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -213,16 +184,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
               ))}
             </div>
 
-            {/* Help Button */}
-            <button
-              onClick={handleGiveUp}
-              className="p-2 bg-[#1E1E1E] rounded border border-white/10 hover:brightness-110 transition"
-              title="Help options"
-            >
-              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
           </div>
         </div>
       )}
@@ -249,35 +210,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
             keyStatuses={keyStatuses}
             contractColor={riskColor}
           />
-        </div>
-      )}
-
-      {/* Help Modal */}
-      {showHelpModal && (
-        <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-          <div ref={helpModalRef} className="bg-[#1E1E1E] rounded-lg p-5 max-w-sm w-full border border-white/10">
-            <h3 className="text-lg font-bold mb-3 text-[#007ACC]">Need Help?</h3>
-            <div className="space-y-2 mb-4">
-              <button className="w-full p-3 bg-[#2A2A2A] rounded text-left hover:brightness-110 transition border border-white/10">
-                <div className="font-bold text-sm">Buy a Letter Hint</div>
-                <div className="text-xs text-gray-400">Reveal one correct letter (5,000 pts)</div>
-              </button>
-              <button className="w-full p-3 bg-[#2A2A2A] rounded text-left hover:brightness-110 transition border border-white/10">
-                <div className="font-bold text-sm">Send to Friend</div>
-                <div className="text-xs text-gray-400">Get help and split the pot</div>
-              </button>
-              <button className="w-full p-3 bg-[#3A1A1A] rounded text-left hover:brightness-110 transition border border-[#F44336]/30">
-                <div className="font-bold text-sm text-[#F44336]">Give Up</div>
-                <div className="text-xs text-gray-400">Reveal answer and lose all points</div>
-              </button>
-            </div>
-            <button
-              onClick={() => setShowHelpModal(false)}
-              className="w-full py-2 bg-[#007ACC] rounded font-bold hover:brightness-110 transition"
-            >
-              Cancel
-            </button>
-          </div>
         </div>
       )}
 

@@ -17,12 +17,6 @@ interface KeyboardProps {
    Layout constants
 ========================= */
 
-const MAX_WIDTH = 520;
-
-const LETTER_KEY = 'w-[44px] h-[52px]';
-const CLUE_KEY = 'w-[44px] h-[44px]';
-const ACTION_KEY = 'w-[64px] h-[44px]';
-const CENTER_KEY = 'w-[56px] h-[44px]';
 
 /* =========================
    Keyboard Component
@@ -31,7 +25,7 @@ const CENTER_KEY = 'w-[56px] h-[44px]';
 export const Keyboard: React.FC<KeyboardProps> = ({
   onKeyPress,
   keyStatuses,
-  contractColor = '#4CAF50' // Default safe green props fallback
+  contractColor = '#4CAF50'
 }) => {
   const row1 = 'QWERTYUIOP'.split('');
   const row2 = 'ASDFGHJKL'.split('');
@@ -46,121 +40,84 @@ export const Keyboard: React.FC<KeyboardProps> = ({
   };
 
   return (
-    <div
-      className="w-full mx-auto select-none border-t border-white/10 p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]"
-      style={{
-        maxWidth: MAX_WIDTH,
-        backgroundColor: `${contractColor}15`
-      }}
-    >
-      {/* ROW 1 */}
-      <Row>
-        {row1.map((c) => (
-          <Key
-            key={c}
-            label={c}
-            variant={getVariant(c)}
-            onClick={() => onKeyPress(c)}
-          />
-        ))}
-      </Row>
+    <div className="w-full max-w-md mx-auto p-1 select-none">
+      <div className="flex flex-col gap-1.5 px-1">
 
-      {/* ROW 2 */}
-      <Row>
-        {row2.map((c) => (
-          <Key
-            key={c}
-            label={c}
-            variant={getVariant(c)}
-            onClick={() => onKeyPress(c)}
-          />
-        ))}
-      </Row>
+        {/* ROW 1 */}
+        <div className="flex gap-1.5 touch-action-manipulation">
+          {row1.map((char) => (
+            <Key
+              key={char}
+              label={char}
+              variant={getVariant(char)}
+              onClick={() => onKeyPress(char)}
+            />
+          ))}
+        </div>
 
-      {/* ROW 3 */}
-      <Row>
-        {row3.map((c) => (
-          <Key
-            key={c}
-            label={c}
-            variant={getVariant(c)}
-            onClick={() => onKeyPress(c)}
-          />
-        ))}
-      </Row>
+        {/* ROW 2 */}
+        <div className="flex gap-1.5 px-4 touch-action-manipulation">
+          {row2.map((char) => (
+            <Key
+              key={char}
+              label={char}
+              variant={getVariant(char)}
+              onClick={() => onKeyPress(char)}
+            />
+          ))}
+        </div>
 
-      {/* BOTTOM ROW - Functional Keys */}
-      <div className="flex justify-center gap-2 mt-1 mb-2">
-        {/* BACKSPACE */}
-        <button
-          onClick={() => onKeyPress('BACKSPACE')}
-          className={`
-                        ${ACTION_KEY}
-                        rounded-md
-                        bg-gradient-to-b from-[#6A3A3A] to-[#5A2A2A]
-                        border border-[#F44336]/30
-                        flex items-center justify-center
-                        transition-all duration-200
-                        active:scale-95 active:translate-y-0.5
-                        hover:brightness-110
-                        shadow-[0_4px_12px_rgba(0,0,0,0.3)]
-                    `}
-        >
-          <BackspaceIcon />
-        </button>
+        {/* ROW 3 */}
+        <div className="flex gap-1.5 px-8 touch-action-manipulation">
+          {row3.map((char) => (
+            <Key
+              key={char}
+              label={char}
+              variant={getVariant(char)}
+              onClick={() => onKeyPress(char)}
+            />
+          ))}
+        </div>
 
-        {/* VISUALIZER - Interactive */}
-        <button
-          onClick={() => onKeyPress('_')}
-          className={`
-                        ${CENTER_KEY}
-                        rounded-md
-                        border
-                        flex flex-col items-center justify-center
-                        transition-all duration-200
-                        active:scale-95 active:translate-y-0.5
-                        hover:brightness-110
-                        shadow-[0_4px_12px_rgba(0,0,0,0.3)]
-                        cursor-pointer
-                    `}
-          style={{
-            backgroundColor: `${contractColor}40`,
-            borderColor: `${contractColor}80`
-          }}
-        >
-          <span className="text-[10px] text-white/90 font-bold tracking-wide">VIZ</span>
-          <span className="text-lg leading-none text-white font-bold">_</span>
-        </button>
+        {/* ROW 4 - SPECIAL KEYS */}
+        <div className="flex gap-1.5 h-12 mt-1 touch-action-manipulation px-1">
+          {/* BACKSPACE */}
+          <button
+            onClick={() => onKeyPress('BACKSPACE')}
+            className="flex-[1.5] bg-[#3A3A3C] text-white rounded-lg flex items-center justify-center active:scale-95 transition hover:brightness-110 shadow-sm"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-9.172a2 2 0 00-1.414.586L3 12z" />
+            </svg>
+          </button>
 
-        {/* ENTER */}
-        <button
-          onClick={() => onKeyPress('ENTER')}
-          className={`
-                        ${ACTION_KEY}
-                        rounded-md
-                        bg-gradient-to-b from-[#3A6A3A] to-[#2A5A2A]
-                        border border-[#4CAF50]/30
-                        flex items-center justify-center
-                        transition-all duration-200
-                        active:scale-95 active:translate-y-0.5
-                        hover:brightness-110
-                        shadow-[0_4px_12px_rgba(0,0,0,0.3)]
-                    `}
-        >
-          <EnterIcon />
-        </button>
+          {/* VISUALIZER KEY */}
+          <button
+            onClick={() => onKeyPress('_')}
+            className="flex-[2] rounded-lg flex flex-col items-center justify-center active:scale-95 transition hover:brightness-110 shadow-sm border border-white/10"
+            style={{ backgroundColor: `${contractColor}40` }}
+          >
+            <span className="text-[10px] font-bold text-white/90 tracking-widest mb-0.5">VIZ</span>
+            <div className="w-8 h-1 bg-white/90 rounded-full" />
+          </button>
+
+          {/* ENTER */}
+          <button
+            onClick={() => onKeyPress('ENTER')}
+            className="flex-[1.5] bg-[#3A3A3C] text-white rounded-lg flex items-center justify-center active:scale-95 transition hover:brightness-110 shadow-sm"
+          >
+            <span className="text-xs font-bold tracking-wider">ENTER</span>
+          </button>
+        </div>
+
       </div>
     </div>
   );
 };
 
 /* =========================
-   Subcomponents
+   Key Component
    ========================= */
-
-const Row = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex justify-center gap-1 mb-2">{children}</div>
-);
 
 const Key = ({
   label,
@@ -171,55 +128,31 @@ const Key = ({
   variant: KeyVariant;
   onClick: () => void;
 }) => {
-  // Base classes shared by all keys
-  const baseClasses = "flex items-center justify-center font-bold text-lg text-white transition-all duration-200 active:scale-95 active:translate-y-0.5 hover:brightness-110";
+  // Base classes - shorter height (h-12), distinct rounded look (rounded-lg)
+  const baseClasses = "flex-1 h-12 flex items-center justify-center text-lg font-bold rounded-lg transition-all duration-100 active:scale-95 shadow-sm select-none touch-action-manipulation mx-0.5";
 
-  let sizeClass = LETTER_KEY;
-  let styleClass = "";
+  let styles = "";
 
   switch (variant) {
-    case 'circle':
-      sizeClass = CLUE_KEY;
-      // .key-circle is defined in index.css (blue circle with shadow)
-      styleClass = "key-circle";
+    case 'circle': // CORRECT
+      styles = "key-circle-modern text-white shadow-md";
       break;
-    case 'triangle':
-      sizeClass = CLUE_KEY;
-      // .key-triangle is defined in index.css (yellow triangle clip-path)
-      styleClass = "key-triangle";
+    case 'triangle': // PRESENT
+      styles = "key-triangle-modern text-black shadow-md";
       break;
-    case 'absent':
-      sizeClass = LETTER_KEY;
-      styleClass = "rounded-md bg-[#1A1A1A] border border-white/10 text-white/40 shadow-none";
+    case 'absent': // ABSENT
+      styles = "bg-[#3A3A3C] text-white/50";
       break;
-    default: // letter
-      sizeClass = LETTER_KEY;
-      styleClass = "rounded-md bg-gradient-to-b from-[#5A5A5A] to-[#4A4A4A] border border-white/20 shadow-[0_4px_12px_rgba(0,0,0,0.4)]";
+    default: // UNUSED
+      // Removed the heavy bottom border for a flat, modern 'iOS-style' look.
+      styles = "bg-[#D3D6DA] text-black shadow-sm";
       break;
   }
 
   return (
-    <button
-      onClick={onClick}
-      className={`${baseClasses} ${sizeClass} ${styleClass}`}
-    >
-      <span className="relative z-10">{label}</span>
+    <button onClick={onClick} className={`${baseClasses} ${styles}`}>
+      {label}
     </button>
   );
 };
 
-/* =========================
-   Icons
-   ========================= */
-
-const BackspaceIcon = () => (
-  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-9.172a2 2 0 00-1.414.586L3 12z" />
-  </svg>
-);
-
-const EnterIcon = () => (
-  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 11l3-3m0 0l3 3m-3-3v8" />
-  </svg>
-);
