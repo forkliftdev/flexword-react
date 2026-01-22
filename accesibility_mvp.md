@@ -197,3 +197,88 @@ This document is intended for:
 * Accessibility upgrades post‑MVP
 
 **Do not remove these foundations without understanding the impact.**
+
+Accessibility MVP Implementation Plan
+The goal is to bring the FlexWord codebase into compliance with 
+accesibility_mvp.md
+.
+
+Scope Note: This implementation intentionally avoids full screen reader narration rules and detailed ARIA semantics beyond roles, labels, and focus management. Those will be addressed in a post-MVP accessibility phase.
+
+User Review Required
+No major breaking changes or difficult design decisions. The changes purely add accessibility attributes and focus management logic.
+
+Proposed Changes
+Core Accessibility Infrastructure
+[NEW] 
+Announcer.tsx
+Create a generic Announcer component that renders an aria-live="polite" region off-screen.
+This will be used to announce game state changes (e.g., "Game started", "Guess accepted", "You won").
+export const Announcer = ({ message }: { message: string }) => (
+  <div role="status" aria-live="polite" className="sr-only">
+    {message}
+  </div>
+);
+Component Updates
+[MODIFY] 
+TileFrame.tsx
+Add role="img" to the tile container.
+Add aria-label describing the letter and its status (e.g., "A, correct", "Empty tile").
+[MODIFY] 
+GameScreen.tsx
+Announcer: Integrate Announcer component and hook it up to game events (likely via useEffect tracking phase or errorMessage).
+Row Grouping:
+Update 
+StaticRow
+ to use role="group" and aria-label={Row ${i + 1}}.
+Wrap the current guess input in a keyed container with role="group" and label "Current guess".
+Modal Focus:
+Implement focus management for the inline Help Modal or extract it to a component with focus trap.
+[MODIFY] 
+Keyboard.tsx
+Verify tabIndex behavior.
+Ensure keys have appropriate labels (already mostly good, but will double check functional keys).
+[MODIFY] [components/*.tsx] (Modals)
+CelebrationPopup
+WarningPopup
+Leaderboard
+Add useEffect to trap focus within the modal when open.
+Ensure focus is restored to the triggering element on close.
+Ensure Escape key closes the modal (and doesn't trigger game events).
+Shared Utilities
+[NEW] 
+useFocusTrap.ts
+A reusable hook to handle:
+Initial focus on mount.
+Trapping Tab key within container.
+Restoring focus on unmount.
+Handling Escape key.
+Verification Plan
+Automated Tests
+No existing accessibility test suite to run.
+Manual Verification
+Test 1: Keyboard-Only Playthrough
+
+Load the app.
+Without using the mouse:
+Tab to "Shield" contract (or any tier).
+Press Enter to select.
+Tab to keyboard keys.
+Type "HELLO" using Enter/Space on virtual keys (or physical keyboard if allowed, but virtual keys are the requirement).
+Tab to "Enter" key and press it.
+Verify "Row 1" is announced (if screen reader active) or just verifying focus stays valid.
+Complete a game.
+Navigate the Win/Loss popup using Tab/Enter.
+Select "Next Contract".
+Test 2: Screen Reader Simulation
+
+Inspect the DOM.
+Verify aria-live region updates with messages like "Not in word list" or "Game Over".
+Verify Tiles have role="img" and labels like "H, correct".
+Verify Rows have role="group".
+Test 3: Focus Management
+
+Open Help Modal.
+Press Tab repeatedly; focus should cycle only inside the modal.
+Press Escape; modal should close and focus return to the "Help" button (or logical place).
+

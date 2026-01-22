@@ -7,6 +7,8 @@ import { BankDisplay } from './BankDisplay';
 import { Leaderboard } from './Leaderboard';
 import { CelebrationPopup } from './CelebrationPopup';
 import { WarningPopup } from './WarningPopup';
+import { Announcer } from './Announcer';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface GameScreenProps {
   contract: ContractTier;
@@ -17,6 +19,13 @@ interface GameScreenProps {
 export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initialBank }) => {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
+
+  // Focus trap for help modal
+  const helpModalRef = useFocusTrap({
+    isActive: showHelpModal,
+    onEscape: () => setShowHelpModal(false),
+  });
 
   const {
     phase,
@@ -46,6 +55,17 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
     window.addEventListener('keydown', listener);
     return () => window.removeEventListener('keydown', listener);
   }, [handleInput]);
+
+  // Announce game state changes for screen readers
+  useEffect(() => {
+    if (phase === 'WON') {
+      setAnnouncement(`You won! Earned ${lastWinnings} points.`);
+    } else if (phase === 'LOST') {
+      setAnnouncement(`Game over. The word was ${targetWord}.`);
+    } else if (errorMessage) {
+      setAnnouncement(errorMessage);
+    }
+  }, [phase, errorMessage, lastWinnings, targetWord]);
 
   // Get risk color based on contract
   const getRiskColor = () => {
@@ -153,7 +173,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
       {/* GUESSED WORDS - Chat-style: newest at bottom, scroll up for history */}
       <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col justify-end">
         {guesses.map((word, i) => (
-          <div key={i} className="mb-2">
+          <div key={i} className="mb-2" role="group" aria-label={`Row ${i + 1}`}>
             <StaticRow word={word} target={targetWord} />
           </div>
         ))}
@@ -182,7 +202,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
             </button>
 
             {/* Guess Field - Smaller tiles (35px) with gaps */}
-            <div className="flex gap-1.5">
+            <div className="flex gap-1.5" role="group" aria-label="Current guess">
               {Array.from({ length: 5 }).map((_, i) => (
                 <TileFrame
                   key={i}
@@ -235,7 +255,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
       {/* Help Modal */}
       {showHelpModal && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-          <div className="bg-[#1E1E1E] rounded-lg p-5 max-w-sm w-full border border-white/10">
+          <div ref={helpModalRef} className="bg-[#1E1E1E] rounded-lg p-5 max-w-sm w-full border border-white/10">
             <h3 className="text-lg font-bold mb-3 text-[#007ACC]">Need Help?</h3>
             <div className="space-y-2 mb-4">
               <button className="w-full p-3 bg-[#2A2A2A] rounded text-left hover:brightness-110 transition border border-white/10">
@@ -286,6 +306,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
         onClose={closeCelebration}
         onExit={() => onExit(bankScore)} // Pass bank score on win exit
       />
+
+      {/* Accessibility Announcer */}
+      <Announcer message={announcement} />
     </div>
   );
 };

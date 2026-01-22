@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LeaderboardEntry } from '../../shared/types/api';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface LeaderboardProps {
   isOpen: boolean;
@@ -16,6 +17,12 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose, curre
       fetchLeaderboard();
     }
   }, [isOpen]);
+
+  // Focus trap for accessibility
+  const modalRef = useFocusTrap({
+    isActive: isOpen,
+    onEscape: onClose,
+  });
 
   const fetchLeaderboard = async () => {
     setLoading(true);
@@ -34,7 +41,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose, curre
 
   return (
     <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-      <div className="bg-[#1E1E1E] rounded-lg p-5 max-w-md w-full border border-white/10 max-h-[80vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        className="bg-[#1E1E1E] rounded-lg p-5 max-w-md w-full border border-white/10 max-h-[80vh] overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold text-[#007ACC]">🏆 Leaderboard</h3>
@@ -74,8 +84,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose, curre
                 key={entry.username}
                 className={`
                   p-3 rounded flex items-center justify-between
-                  ${isCurrentUser 
-                    ? 'bg-[#007ACC]/20 border border-[#007ACC]/50' 
+                  ${isCurrentUser
+                    ? 'bg-[#007ACC]/20 border border-[#007ACC]/50'
                     : 'bg-[#2A2A2A] border border-white/10'
                   }
                   transition-all hover:brightness-110
