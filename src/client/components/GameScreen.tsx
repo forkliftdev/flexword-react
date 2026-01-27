@@ -7,17 +7,15 @@ import { BankDisplay } from './BankDisplay';
 import { Leaderboard } from './Leaderboard';
 import { CelebrationPopup } from './CelebrationPopup';
 import { WarningPopup } from './WarningPopup';
-import { Announcer } from './Announcer';
 
 interface GameScreenProps {
   contract: ContractTier;
-  onExit: (score?: number) => void;
-  initialBank?: number;
+  onExit: () => void;
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initialBank }) => {
+export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit }) => {
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [announcement, setAnnouncement] = useState('');
 
   const {
     phase,
@@ -36,7 +34,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
     showCelebration,
     closeWarning,
     closeCelebration,
-  } = useFlexword(initialBank);
+  } = useFlexword();
 
   useEffect(() => {
     startGame(contract);
@@ -47,17 +45,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
     window.addEventListener('keydown', listener);
     return () => window.removeEventListener('keydown', listener);
   }, [handleInput]);
-
-  // Announce game state changes for screen readers
-  useEffect(() => {
-    if (phase === 'WON') {
-      setAnnouncement(`You won! Earned ${lastWinnings} points.`);
-    } else if (phase === 'LOST') {
-      setAnnouncement(`Game over. The word was ${targetWord}.`);
-    } else if (errorMessage) {
-      setAnnouncement(errorMessage);
-    }
-  }, [phase, errorMessage, lastWinnings, targetWord]);
 
   // Get risk color based on contract
   const getRiskColor = () => {
@@ -73,6 +60,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
 
   const riskColor = getRiskColor();
 
+  const handleTrash = () => {
+    // Clear current guess
+    while (currentGuess.length > 0) {
+      handleInput('BACKSPACE');
+    }
+  };
+
+  const handleGiveUp = () => {
+    setShowHelpModal(true);
+  };
 
   return (
     <div className="flex flex-col h-screen w-full bg-[#121212] text-white">
@@ -80,7 +77,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
       {/* APP BAR */}
       <div className="flex justify-between items-center px-4 py-4 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <button onClick={() => onExit(bankScore)} className="text-white/70 hover:text-white">
+          <button onClick={onExit} className="text-white/70 hover:text-white">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -155,7 +152,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
       {/* GUESSED WORDS - Chat-style: newest at bottom, scroll up for history */}
       <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col justify-end">
         {guesses.map((word, i) => (
-          <div key={i} className="mb-2" role="group" aria-label={`Row ${i + 1}`}>
+          <div key={i} className="mb-2">
             <StaticRow word={word} target={targetWord} />
           </div>
         ))}
@@ -172,8 +169,19 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
             </div>
           )}
           <div className="flex items-center justify-center gap-2">
+            {/* Trash Button */}
+            <button
+              onClick={handleTrash}
+              className="p-2 bg-[#1E1E1E] rounded border border-white/10 hover:brightness-110 transition"
+              title="Clear guess"
+            >
+              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+
             {/* Guess Field - Smaller tiles (35px) with gaps */}
-            <div className="flex gap-1.5" role="group" aria-label="Current guess">
+            <div className="flex gap-1.5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <TileFrame
                   key={i}
@@ -184,6 +192,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
               ))}
             </div>
 
+            {/* Help Button */}
+            <button
+              onClick={handleGiveUp}
+              className="p-2 bg-[#1E1E1E] rounded border border-white/10 hover:brightness-110 transition"
+              title="Help options"
+            >
+              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
           </div>
         </div>
       )}
@@ -194,7 +212,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
           <h2 className="text-lg font-bold text-[#F44336] mb-1.5 tracking-wider">CONTRACT BREACHED</h2>
           <p className="mb-3 text-gray-400 text-sm">Target: <span className="text-white font-bold">{targetWord}</span></p>
           <button
-            onClick={() => onExit(bankScore)}
+            onClick={onExit}
             className="bg-gray-700 text-white px-6 py-2.5 rounded font-bold w-full hover:brightness-110 transition text-sm"
           >
             PICK NEW CONTRACT
@@ -210,6 +228,35 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
             keyStatuses={keyStatuses}
             contractColor={riskColor}
           />
+        </div>
+      )}
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-[#1E1E1E] rounded-lg p-5 max-w-sm w-full border border-white/10">
+            <h3 className="text-lg font-bold mb-3 text-[#007ACC]">Need Help?</h3>
+            <div className="space-y-2 mb-4">
+              <button className="w-full p-3 bg-[#2A2A2A] rounded text-left hover:brightness-110 transition border border-white/10">
+                <div className="font-bold text-sm">Buy a Letter Hint</div>
+                <div className="text-xs text-gray-400">Reveal one correct letter (5,000 pts)</div>
+              </button>
+              <button className="w-full p-3 bg-[#2A2A2A] rounded text-left hover:brightness-110 transition border border-white/10">
+                <div className="font-bold text-sm">Send to Friend</div>
+                <div className="text-xs text-gray-400">Get help and split the pot</div>
+              </button>
+              <button className="w-full p-3 bg-[#3A1A1A] rounded text-left hover:brightness-110 transition border border-[#F44336]/30">
+                <div className="font-bold text-sm text-[#F44336]">Give Up</div>
+                <div className="text-xs text-gray-400">Reveal answer and lose all points</div>
+              </button>
+            </div>
+            <button
+              onClick={() => setShowHelpModal(false)}
+              className="w-full py-2 bg-[#007ACC] rounded font-bold hover:brightness-110 transition"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
 
@@ -236,11 +283,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ contract, onExit, initia
         currentBank={bankScore - lastWinnings}
         newBank={bankScore}
         onClose={closeCelebration}
-        onExit={() => onExit(bankScore)} // Pass bank score on win exit
+        onExit={onExit}
       />
-
-      {/* Accessibility Announcer */}
-      <Announcer message={announcement} />
     </div>
   );
 };

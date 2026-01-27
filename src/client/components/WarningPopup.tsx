@@ -1,5 +1,4 @@
 import React from 'react';
-import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface WarningPopupProps {
   isOpen: boolean;
@@ -10,11 +9,11 @@ interface WarningPopupProps {
 
 const STORAGE_KEY = 'flexword_hide_warning';
 
-export const WarningPopup: React.FC<WarningPopupProps> = ({
-  isOpen,
+export const WarningPopup: React.FC<WarningPopupProps> = ({ 
+  isOpen, 
   guessesRemaining,
   currentPot,
-  onContinue
+  onContinue 
 }) => {
   const [dontShowAgain, setDontShowAgain] = React.useState(false);
 
@@ -33,20 +32,11 @@ export const WarningPopup: React.FC<WarningPopupProps> = ({
     }
   }, [isOpen, onContinue]);
 
-  // Focus trap for accessibility
-  const modalRef = useFocusTrap({
-    isActive: isOpen,
-    onEscape: handleContinue,
-  });
-
   if (!isOpen) return null;
 
   return (
     <div className="absolute inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
-      <div
-        ref={modalRef}
-        className="bg-[#1E1E1E] rounded-lg p-6 max-w-md w-full border-2 border-[#FFC107] shadow-[0_0_30px_rgba(255,193,7,0.4)] animate-pulse-slow"
-      >
+      <div className="bg-[#1E1E1E] rounded-lg p-6 max-w-md w-full border-2 border-[#FFC107] shadow-[0_0_30px_rgba(255,193,7,0.4)] animate-pulse-slow">
         {/* Warning Icon */}
         <div className="text-center mb-4">
           <div className="text-5xl mb-2">⚠️</div>
@@ -60,7 +50,7 @@ export const WarningPopup: React.FC<WarningPopupProps> = ({
           <p className="text-white text-center font-bold mb-3">
             This is your final guess to fulfill the contract!
           </p>
-
+          
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-400">Guesses Left:</span>
@@ -76,8 +66,8 @@ export const WarningPopup: React.FC<WarningPopupProps> = ({
         {/* Info Box */}
         <div className="bg-[#3A2A1A] rounded p-3 mb-4 border border-[#FF9800]/30">
           <p className="text-xs text-gray-300 leading-relaxed">
-            <span className="text-[#FF9800] font-bold">⚡ Overtime Rules:</span><br />
-            If you miss, your pot will be <span className="text-[#F44336] font-bold">cut in half</span> every turn.
+            <span className="text-[#FF9800] font-bold">⚡ Overtime Rules:</span><br/>
+            If you miss, your pot will be <span className="text-[#F44336] font-bold">cut in half</span> every turn. 
             You can keep playing as long as you want, but your winnings will decrease!
           </p>
         </div>

@@ -8,7 +8,7 @@ const WORD_LENGTH = 5;
 
 type GamePhase = 'SETUP' | 'PLAYING' | 'WON' | 'LOST';
 
-export const useFlexword = (initialBank?: number) => {
+export const useFlexword = () => {
   // --- STATE ---
   const [phase, setPhase] = useState<GamePhase>('SETUP');
   const [targetWord, setTargetWord] = useState('');
@@ -17,7 +17,7 @@ export const useFlexword = (initialBank?: number) => {
   const [contract, setContract] = useState<ContractTier | null>(null);
 
   // Scoring
-  const [bankScore, setBankScore] = useState(initialBank ?? 0);
+  const [bankScore, setBankScore] = useState(0);
   const [potValue, setPotValue] = useState(10000);
   const [errorMessage, setErrorMessage] = useState('');
   const [solvedWords, setSolvedWords] = useState<string[]>([]);

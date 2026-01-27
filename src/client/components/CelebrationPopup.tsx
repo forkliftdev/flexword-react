@@ -1,5 +1,4 @@
 import React from 'react';
-import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface CelebrationPopupProps {
   isOpen: boolean;
@@ -12,9 +11,9 @@ interface CelebrationPopupProps {
   onExit: () => void;
 }
 
-export const CelebrationPopup: React.FC<CelebrationPopupProps> = ({
-  isOpen,
-  winnings,
+export const CelebrationPopup: React.FC<CelebrationPopupProps> = ({ 
+  isOpen, 
+  winnings, 
   guessCount,
   contractGuesses,
   currentBank,
@@ -51,22 +50,13 @@ export const CelebrationPopup: React.FC<CelebrationPopupProps> = ({
     }
   }, [isOpen, currentBank, newBank]);
 
-  // Focus trap for accessibility
-  const modalRef = useFocusTrap({
-    isActive: isOpen,
-    onEscape: onClose,
-  });
-
   if (!isOpen) return null;
 
   const isWithinContract = guessCount <= contractGuesses;
 
   return (
     <div className="absolute inset-0 bg-black/90 flex items-center justify-center p-4 z-50 animate-fadeIn">
-      <div
-        ref={modalRef}
-        className="bg-gradient-to-b from-[#1E1E1E] to-[#0a0a0a] rounded-lg p-8 max-w-sm w-full border-2 border-[#4CAF50] shadow-[0_0_40px_rgba(76,175,80,0.5)] animate-scaleIn"
-      >
+      <div className="bg-gradient-to-b from-[#1E1E1E] to-[#0a0a0a] rounded-lg p-8 max-w-sm w-full border-2 border-[#4CAF50] shadow-[0_0_40px_rgba(76,175,80,0.5)] animate-scaleIn">
         {/* Celebration Icon */}
         <div className="text-center mb-4">
           <div className="text-6xl mb-2 animate-bounce">

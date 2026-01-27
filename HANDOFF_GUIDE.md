@@ -7,13 +7,6 @@ FlexWord is a Wordle-style word game for Reddit with a unique contract-based ris
 **Current Status:** Core gameplay complete, needs polish and bug fixes before launch.
 
 ---
-## Version History
-
-### after every update, update version number in ContractMenu.tsx
-
-## Accessibility
-
-Please read the accessibility guide in accessibility_mvp.md
 
 ## 🚀 Launch Readiness
 
@@ -181,11 +174,11 @@ Please read the accessibility guide in accessibility_mvp.md
 
 ## 🐛 Known Issues
 
-1. **Bank persistence not working** - Recently fixed, needs testing
+1. **Bank persistence not working** - Top priority fix
 2. **Warning popup timing** - Recently fixed, needs testing
-3. **Bug on delete field key** - crashes the app
+3. **No word pool exhaustion handling** - Could run out of unsolved words
 4. **No error states** - If Redis fails, no user feedback
-5. **Keyboad looks janky, esp on mobile** need rounded keys, some spacing adjustments, while retaining circles and triangles added after clues obtained. This is the most important UI fix needed.
+
 ---
 
 ## 🧪 Testing Guide
@@ -236,10 +229,7 @@ npm run dev:devvit -- flexword_dev
 
 ## 📦 Deployment
 
-### Build (keep this secrion in all future handoffs)
-
-Dev page @ https://developers.reddit.com/r/flexword_dev/apps
-https://developers.reddit.com/r/flexword_dev/apps/flexword-react
+### Build
 
 ```bash
 npm run build
@@ -262,17 +252,6 @@ npm run deploy: Uploads a new version of your app
 npm run launch: Publishes your app for review
 npm run login: Logs your CLI into Reddit
 npm run check: Type checks, lints, and prettifies your app
-
-Use the build watchers (Recommended) Instead of relying on devvit playtest, you can run build watchers that auto-rebuild when you save:
-
-bash
-# Terminal 1: Watch and rebuild client
-npm run dev:client
-# Terminal 2: Watch and rebuild server  
-npm run dev:server
-# Terminal 3: Run devvit playtest
-npm run dev:devvit -- flexword_dev
-This way, when you save a file, it rebuilds automatically, and you just need to refresh in Reddit (not re-upload).
 ---
 
 ## 🔑 Key Files Reference
@@ -341,7 +320,9 @@ This way, when you save a file, it rebuilds automatically, and you just need to 
 
 1. **Redis Connection** - Is it connecting properly? Check server logs.
 2. **Word Lists** - Where are valid/target words stored? Need to remove "NANCE".
+3. **Mobile Testing** - Has this been tested in Reddit mobile app?
 4. **Rate Limiting** - Should we limit API calls to prevent abuse?
+5. **Word Pool** - What happens when user solves all words?
 
 ---
 

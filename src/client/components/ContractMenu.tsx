@@ -5,18 +5,16 @@ import { UserDataResponse } from '../../shared/types/api';
 
 interface ContractMenuProps {
   onSelect: (contract: ContractTier) => void;
-  initialBank?: number;
 }
 
-export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect, initialBank }) => {
-  const [bankScore, setBankScore] = useState(initialBank ?? 0);
+export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect }) => {
+  const [bankScore, setBankScore] = useState(0);
 
   // Fetch real user data on mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Cache busting to ensure we get fresh bank balance
-        const response = await fetch(`/api/user-data?t=${Date.now()}`);
+        const response = await fetch('/api/user-data');
         if (response.ok) {
           const data: UserDataResponse = await response.json();
           setBankScore(data.bank);
@@ -34,9 +32,10 @@ export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect, initialBan
     >
 
       {/* 1. Header: Centered, Blue FlexWord */}
+      {/* 1. Header: Centered, Blue FlexWord */}
       <div className="w-full flex justify-center items-center mb-1 relative">
-        <h1 className="text-3xl font-black tracking-wider text-[#007ACC] uppercase">FlexWord 42</h1>
-
+        <h1 className="text-3xl font-black tracking-wider text-[#007ACC] uppercase">FlexWord</h1>
+        <span className="absolute right-4 top-0 text-xs text-red-500 font-mono border border-red-500 px-1 rounded">v31</span>
       </div>
 
       {/* 2. HUD Row: Bank + Example Grid (Centered & Aligned) */}
@@ -123,7 +122,7 @@ export const ContractMenu: React.FC<ContractMenuProps> = ({ onSelect, initialBan
         </p>
       </div>
 
-    </div >
+    </div>
   );
 };
 

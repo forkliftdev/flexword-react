@@ -106,16 +106,23 @@ router.get<{}, UserDataResponse | { status: string; message: string }>(
   async (_req, res): Promise<void> => {
     try {
       const username = await reddit.getCurrentUsername();
-      const safeUsername = username || 'anonymous';
+
+      if (!username) {
+        res.status(400).json({
+          status: 'error',
+          message: 'Unable to get username',
+        });
+        return;
+      }
 
       const [bank, solvedWords] = await Promise.all([
-        RedisService.getUserBank(safeUsername),
-        RedisService.getSolvedWords(safeUsername),
+        RedisService.getUserBank(username),
+        RedisService.getSolvedWords(username),
       ]);
 
       res.json({
         type: 'user-data',
-        username: safeUsername,
+        username,
         bank,
         solvedWords,
       });
@@ -135,21 +142,28 @@ router.post<{}, SaveGameResponse | { status: string; message: string }, SaveGame
   async (req, res): Promise<void> => {
     try {
       const username = await reddit.getCurrentUsername();
-      const safeUsername = username || 'anonymous';
+
+      if (!username) {
+        res.status(400).json({
+          status: 'error',
+          message: 'Unable to get username',
+        });
+        return;
+      }
 
       const { word, winnings } = req.body;
 
       // Update bank balance
-      const newBank = await RedisService.updateUserBank(safeUsername, winnings);
+      const newBank = await RedisService.updateUserBank(username, winnings);
 
       // Track solved word
-      await RedisService.addSolvedWord(safeUsername, word);
+      await RedisService.addSolvedWord(username, word);
 
       // Update leaderboard
-      await RedisService.updateLeaderboard(safeUsername, newBank);
+      await RedisService.updateLeaderboard(username, newBank);
 
       // Get total solved count
-      const solvedWords = await RedisService.getSolvedWords(safeUsername);
+      const solvedWords = await RedisService.getSolvedWords(username);
 
       res.json({
         type: 'save-game',

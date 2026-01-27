@@ -14,13 +14,24 @@ interface KeyboardProps {
 }
 
 /* =========================
+   Layout constants
+========================= */
+
+const MAX_WIDTH = 520;
+
+const LETTER_KEY = 'w-[44px] h-[52px]';
+const CLUE_KEY = 'w-[44px] h-[44px]';
+const ACTION_KEY = 'w-[64px] h-[44px]';
+const CENTER_KEY = 'w-[56px] h-[44px]';
+
+/* =========================
    Keyboard Component
 ========================= */
 
 export const Keyboard: React.FC<KeyboardProps> = ({
   onKeyPress,
   keyStatuses,
-  contractColor = '#4CAF50',
+  contractColor = '#4CAF50' // Default safe green props fallback
 }) => {
   const row1 = 'QWERTYUIOP'.split('');
   const row2 = 'ASDFGHJKL'.split('');
@@ -35,105 +46,121 @@ export const Keyboard: React.FC<KeyboardProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-1 select-none">
+    <div
+      className="w-full mx-auto select-none border-t border-white/10 p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]"
+      style={{
+        maxWidth: MAX_WIDTH,
+        backgroundColor: `${contractColor}15`
+      }}
+    >
+      {/* ROW 1 */}
+      <Row>
+        {row1.map((c) => (
+          <Key
+            key={c}
+            label={c}
+            variant={getVariant(c)}
+            onClick={() => onKeyPress(c)}
+          />
+        ))}
+      </Row>
 
-      <div className="flex flex-col gap-1.5 px-1">
+      {/* ROW 2 */}
+      <Row>
+        {row2.map((c) => (
+          <Key
+            key={c}
+            label={c}
+            variant={getVariant(c)}
+            onClick={() => onKeyPress(c)}
+          />
+        ))}
+      </Row>
 
-        {/* ROW 1 */}
-        <div className="flex gap-1.5">
-          {row1.map((char) => (
-            <Key
-              key={char}
-              label={char}
-              variant={getVariant(char)}
-              onClick={() => onKeyPress(char)}
-            />
-          ))}
-        </div>
+      {/* ROW 3 */}
+      <Row>
+        {row3.map((c) => (
+          <Key
+            key={c}
+            label={c}
+            variant={getVariant(c)}
+            onClick={() => onKeyPress(c)}
+          />
+        ))}
+      </Row>
 
-        {/* ROW 2 */}
-        <div className="flex gap-1.5 px-4">
-          {row2.map((char) => (
-            <Key
-              key={char}
-              label={char}
-              variant={getVariant(char)}
-              onClick={() => onKeyPress(char)}
-            />
-          ))}
-        </div>
+      {/* BOTTOM ROW - Functional Keys */}
+      <div className="flex justify-center gap-2 mt-1 mb-2">
+        {/* BACKSPACE */}
+        <button
+          onClick={() => onKeyPress('BACKSPACE')}
+          className={`
+                        ${ACTION_KEY}
+                        rounded-md
+                        bg-gradient-to-b from-[#6A3A3A] to-[#5A2A2A]
+                        border border-[#F44336]/30
+                        flex items-center justify-center
+                        transition-all duration-200
+                        active:scale-95 active:translate-y-0.5
+                        hover:brightness-110
+                        shadow-[0_4px_12px_rgba(0,0,0,0.3)]
+                    `}
+        >
+          <BackspaceIcon />
+        </button>
 
-        {/* ROW 3 */}
-        <div className="flex gap-1.5 px-8">
-          {row3.map((char) => (
-            <Key
-              key={char}
-              label={char}
-              variant={getVariant(char)}
-              onClick={() => onKeyPress(char)}
-            />
-          ))}
-        </div>
+        {/* VISUALIZER - Interactive */}
+        <button
+          onClick={() => onKeyPress('_')}
+          className={`
+                        ${CENTER_KEY}
+                        rounded-md
+                        border
+                        flex flex-col items-center justify-center
+                        transition-all duration-200
+                        active:scale-95 active:translate-y-0.5
+                        hover:brightness-110
+                        shadow-[0_4px_12px_rgba(0,0,0,0.3)]
+                        cursor-pointer
+                    `}
+          style={{
+            backgroundColor: `${contractColor}40`,
+            borderColor: `${contractColor}80`
+          }}
+        >
+          <span className="text-[10px] text-white/90 font-bold tracking-wide">VIZ</span>
+          <span className="text-lg leading-none text-white font-bold">_</span>
+        </button>
 
-        {/* ROW 4 — SPECIAL KEYS */}
-        <div className="flex gap-1.5 h-12 mt-1 px-1">
-
-          {/* BACKSPACE */}
-          <button
-            onClick={() => onKeyPress('BACKSPACE')}
-            className="flex-[1.5] bg-[#2f2f31] text-white rounded-xl
-                       flex items-center justify-center
-                       active:scale-95 transition shadow-md"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2
-                   M3 12l6.414 6.414a2 2 0 001.414.586
-                   H19a2 2 0 002-2V7a2 2 0 00-2-2h-9.172
-                   a2 2 0 00-1.414.586L3 12z"
-              />
-            </svg>
-          </button>
-
-          {/* VIZ KEY */}
-          <button
-            onClick={() => onKeyPress('_')}
-            className="flex-[2] rounded-xl flex flex-col items-center justify-center
-                       active:scale-95 transition shadow-md border border-white/10"
-            style={{ backgroundColor: `${contractColor}55` }}
-          >
-            <span className="text-[10px] font-bold text-white tracking-widest mb-0.5">
-              VIZ
-            </span>
-            <div className="w-8 h-1 bg-white/90 rounded-full" />
-          </button>
-
-          {/* ENTER */}
-          <button
-            onClick={() => onKeyPress('ENTER')}
-            className="flex-[1.5] bg-[#2f2f31] text-white rounded-xl
-                       flex items-center justify-center
-                       active:scale-95 transition shadow-md"
-          >
-            <span className="text-xs font-bold tracking-wider">ENTER</span>
-          </button>
-        </div>
+        {/* ENTER */}
+        <button
+          onClick={() => onKeyPress('ENTER')}
+          className={`
+                        ${ACTION_KEY}
+                        rounded-md
+                        bg-gradient-to-b from-[#3A6A3A] to-[#2A5A2A]
+                        border border-[#4CAF50]/30
+                        flex items-center justify-center
+                        transition-all duration-200
+                        active:scale-95 active:translate-y-0.5
+                        hover:brightness-110
+                        shadow-[0_4px_12px_rgba(0,0,0,0.3)]
+                    `}
+        >
+          <EnterIcon />
+        </button>
       </div>
     </div>
   );
 };
 
 /* =========================
-   Key Component
-========================= */
+   Subcomponents
+   ========================= */
+
+const Row = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex justify-center gap-1 mb-2">{children}</div>
+);
 
 const Key = ({
   label,
@@ -144,58 +171,55 @@ const Key = ({
   variant: KeyVariant;
   onClick: () => void;
 }) => {
+  // Base classes shared by all keys
+  const baseClasses = "flex items-center justify-center font-bold text-lg text-white transition-all duration-200 active:scale-95 active:translate-y-0.5 hover:brightness-110";
 
-  const base =
-    "relative flex-1 h-12 flex items-center justify-center " +
-    "text-lg font-bold rounded-xl select-none " +
-    "transition-all duration-100 active:scale-95 shadow-md";
-
-  let bg = "";
-  let text = "text-black";
+  let sizeClass = LETTER_KEY;
+  let styleClass = "";
 
   switch (variant) {
     case 'circle':
-      bg = "bg-gradient-to-b from-green-400 to-green-600";
-      text = "text-white";
+      sizeClass = CLUE_KEY;
+      // .key-circle is defined in index.css (blue circle with shadow)
+      styleClass = "key-circle";
       break;
-
     case 'triangle':
-      bg = "bg-gradient-to-b from-yellow-300 to-yellow-500";
-      text = "text-black";
+      sizeClass = CLUE_KEY;
+      // .key-triangle is defined in index.css (yellow triangle clip-path)
+      styleClass = "key-triangle";
       break;
-
     case 'absent':
-      bg = "bg-[#2f2f31]";
-      text = "text-white/50";
+      sizeClass = LETTER_KEY;
+      styleClass = "rounded-md bg-[#1A1A1A] border border-white/10 text-white/40 shadow-none";
       break;
-
-    default:
-      bg = "bg-gradient-to-b from-[#f2f3f5] to-[#cfd2d6]";
-      text = "text-black";
+    default: // letter
+      sizeClass = LETTER_KEY;
+      styleClass = "rounded-md bg-gradient-to-b from-[#5A5A5A] to-[#4A4A4A] border border-white/20 shadow-[0_4px_12px_rgba(0,0,0,0.4)]";
       break;
   }
 
   return (
-    <button onClick={onClick} className={`${base} ${bg} ${text}`}>
-      {label}
-
-      {/* soft top highlight */}
-      <div className="absolute top-1 left-1 right-1 h-2 rounded-full bg-white/20 pointer-events-none" />
-
-      {/* SHAPE OVERLAYS */}
-      {variant === 'circle' && (
-        <div className="absolute inset-2 border-2 border-white rounded-full pointer-events-none" />
-      )}
-
-      {variant === 'triangle' && (
-        <div
-          className="absolute w-0 h-0
-                     border-l-[10px] border-r-[10px] border-b-[16px]
-                     border-l-transparent border-r-transparent
-                     border-b-white/90 pointer-events-none"
-          style={{ top: 6 }}
-        />
-      )}
+    <button
+      onClick={onClick}
+      className={`${baseClasses} ${sizeClass} ${styleClass}`}
+    >
+      <span className="relative z-10">{label}</span>
     </button>
   );
 };
+
+/* =========================
+   Icons
+   ========================= */
+
+const BackspaceIcon = () => (
+  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-9.172a2 2 0 00-1.414.586L3 12z" />
+  </svg>
+);
+
+const EnterIcon = () => (
+  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 11l3-3m0 0l3 3m-3-3v8" />
+  </svg>
+);
